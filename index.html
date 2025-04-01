@@ -33,7 +33,7 @@
     </style>
 </head>
 <body>
-    <h2>User Data from Firebase</h2>
+    <h2>All User Data from Firebase</h2>
     <table>
         <thead>
             <tr>
@@ -57,34 +57,37 @@
     </table>
 
     <script>
-        const dbUrl = "https://bodhika-8ca93-default-rtdb.firebaseio.com/.json";
+        const dbUrl = "https://bodhika-8ca93-default-rtdb.firebaseio.com/users.json";
 
         fetch(dbUrl)
             .then(response => response.json())
             .then(data => {
-                const userId = "OMkyIFkvYMx_TE1ZsUh";
-                const userData = data[userId];
                 const tableBody = document.getElementById("userData");
+                tableBody.innerHTML = "";
 
-                if (userData) {
-                    const row = `<tr>
-                        <td>${userData.Name}</td>
-                        <td>${userData.Age}</td>
-                        <td>${userData.Gender}</td>
-                        <td>${userData.Email}</td>
-                        <td>${userData.ContactNo}</td>
-                        <td>${userData.Place}</td>
-                        <td>${userData.SkinType}</td>
-                        <td>${userData.SkinConcerns}</td>
-                        <td>${userData.LifestyleFactors}</td>
-                        <td>${userData.Feeling}</td>
-                        <td>${userData.Suffering}</td>
-                        <td>${userData.Timestamp}</td>
-                        <td><img src="${userData.ImageUrl}" alt="User Image"></td>
-                    </tr>`;
-                    tableBody.innerHTML = row;
-                } else {
-                    tableBody.innerHTML = "<tr><td colspan='13'>No data found</td></tr>";
+                for (const userId in data) {
+                    const userEntries = data[userId].entries;
+                    if (userEntries) {
+                        for (const entryId in userEntries) {
+                            const userData = userEntries[entryId];
+                            const row = `<tr>
+                                <td>${userData.Name}</td>
+                                <td>${userData.Age}</td>
+                                <td>${userData.Gender}</td>
+                                <td>${userData.Email}</td>
+                                <td>${userData.ContactNo}</td>
+                                <td>${userData.Place}</td>
+                                <td>${userData.SkinType}</td>
+                                <td>${userData.SkinConcerns}</td>
+                                <td>${userData.LifestyleFactors}</td>
+                                <td>${userData.Feeling}</td>
+                                <td>${userData.Suffering}</td>
+                                <td>${userData.Timestamp}</td>
+                                <td><img src="${userData.ImageUrl}" alt="User Image"></td>
+                            </tr>`;
+                            tableBody.innerHTML += row;
+                        }
+                    }
                 }
             })
             .catch(error => console.error("Error fetching data:", error));
