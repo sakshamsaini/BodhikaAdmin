@@ -30,6 +30,21 @@
             height: auto;
             border-radius: 5px;
         }
+        .advice-input {
+            width: 100%;
+            padding: 5px;
+        }
+        .advice-button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        .advice-button:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
 <body>
@@ -50,6 +65,8 @@
                 <th>Suffering</th>
                 <th>Timestamp</th>
                 <th>Image</th>
+                <th>Advice</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody id="userData">
@@ -58,6 +75,31 @@
 
     <script>
         const dbUrl = "https://bodhika-8ca93-default-rtdb.firebaseio.com/users.json";
+
+        function sendAdvice(userId, entryId) {
+            const adviceInput = document.getElementById(`advice-${userId}-${entryId}`);
+            const advice = adviceInput.value.trim();
+            if (!advice) {
+                alert("Please enter advice before submitting.");
+                return;
+            }
+            
+            const adviceUrl = `https://bodhika-8ca93-default-rtdb.firebaseio.com/users/${userId}/entries/${entryId}/advice.json`;
+            
+            fetch(adviceUrl, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(advice)
+            })
+            .then(response => response.json())
+            .then(() => {
+                alert("Advice saved successfully!");
+                adviceInput.value = "";
+            })
+            .catch(error => console.error("Error saving advice:", error));
+        }
 
         fetch(dbUrl)
             .then(response => response.json())
@@ -84,6 +126,12 @@
                                 <td>${userData.Suffering}</td>
                                 <td>${userData.Timestamp}</td>
                                 <td><img src="${userData.ImageUrl}" alt="User Image"></td>
+                                <td>
+                                    <input type="text" id="advice-${userId}-${entryId}" class="advice-input" placeholder="Enter advice">
+                                </td>
+                                <td>
+                                    <button class="advice-button" onclick="sendAdvice('${userId}', '${entryId}')">Send</button>
+                                </td>
                             </tr>`;
                             tableBody.innerHTML += row;
                         }
